@@ -253,7 +253,7 @@ curl -sL https://saintsrunclub.com/preorder | grep -c 'id="pays"'
 ```
 Expected: `1`.
 
-- [ ] **Step 3: Hand off the two steps only the owner can do**
+- [x] **Step 3: Hand off the two steps only the owner can do**
 
 1. Paste `google-apps-script.gs` into the Apps Script editor and publish a **new version** of the existing deployment.
 2. Say so; then run the health GET (expects `closesAt` Sept 9, `open: true`), the curl test POST (expects `{"ok":true}`), `submit-live.mjs` (a labeled order through the real page), read the sheet, and delete the two test rows.
