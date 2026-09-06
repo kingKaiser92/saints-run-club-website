@@ -33,7 +33,7 @@
 - Consumes: POST body JSON with optional `fit`, `payMethod`, `paymentCode` (Task 2 adds them) plus the existing `timestamp, name, email, size, quantity, total, zelleCode, company, item, source, orderTotal, lineIndex, lineCount`.
 - Produces: `HEADERS` (13 strings), `PAID_COL` (number), `rowFor(d)`, `cutOf(d)`, `ensureHeaders(sh)`, `countOrderRows(sh)`, `writeHeaders(sh)`. `doGet` unchanged.
 
-- [ ] **Step 1: Write the failing harness** — `<scratchpad>/gs-test.mjs` (full source in the scratchpad; it stubs `SpreadsheetApp`, `LockService`, `MailApp`, `ContentService` and a fixed `Date`, loads the real `.gs` with `vm`, and asserts):
+- [x] **Step 1: Write the failing harness** — `<scratchpad>/gs-test.mjs` (full source in the scratchpad; it stubs `SpreadsheetApp`, `LockService`, `MailApp`, `ContentService` and a fixed `Date`, loads the real `.gs` with `vm`, and asserts):
   1. New-shape post on an empty sheet writes the 13-header row, then `[ts, 'Ana Ruiz', 'ana@x.com', "Men's", 'S', 1, 50, 150, '1 of 2', 'Venmo', '4H2K9', false, source]`, inserts a checkbox at row 2 column 12, freezes row 1, and emails once with the method and `$150 across 2 lines`.
   2. Second line (`lineIndex: 1`) appends with `Line = '2 of 2'`, its own cut, the shared order total, and sends no email.
   3. Old-shape post (no `fit`/`payMethod`/`paymentCode`/`orderTotal`/`lineIndex`) maps cut from `item`'s parenthesis, order total from `total`, `Line = '1 of 1'`, empty Payment, code from `zelleCode`, and emails.
@@ -43,19 +43,19 @@
   7. `setupSheet` refuses with order rows and rewrites a header-only sheet.
   8. `doGet` reports `closesAt` and `open`.
 
-- [ ] **Step 2: Run it, expect failures on the row shape**
+- [x] **Step 2: Run it, expect failures on the row shape**
 
 Run (from the scratchpad): `node gs-test.mjs`
 Expected: FAIL on header row, new-shape row, checkbox column, second line, old-shape row, stale header repair. PASS on honeypot and doGet.
 
-- [ ] **Step 3: Rewrite `google-apps-script.gs`** with: the 13-entry `HEADERS`; `PAID_COL = HEADERS.indexOf('Paid?') + 1`; `countOrderRows(sh)` (non-empty column A below row 1); `writeHeaders(sh)` (values, bold, dark background, gold text, frozen row); `ensureHeaders(sh)` (empty sheet: write; row 1 differs and no orders: clear row 1 across `max(HEADERS.length, getLastColumn())` and write; otherwise leave alone); `setupSheet` using those helpers with the existing refuse-if-data guard; `cutOf(d)` (`d.fit`, else the trailing parenthesised part of `d.item`, else `''`); `rowFor(d)` producing the 13 values in header order with `qty = d.quantity || 1`, `total = d.total ?? ''`, `orderTotal = d.orderTotal ?? total`, `Line = (lineIndex + 1) + ' of ' + (d.lineCount || 1)`, `Payment = d.payMethod || ''`, `code = d.paymentCode || d.zelleCode || ''`, `Paid? = false`; `doPost` calling `ensureHeaders`, `appendRow(rowFor(d))`, `insertCheckboxes` on `PAID_COL`, and the heads-up email listing line, order total, `Paying with:` and `Confirmation code:`. Keep the CLOSES_AT warning comment and `doGet` exactly as they are.
+- [x] **Step 3: Rewrite `google-apps-script.gs`** with: the 13-entry `HEADERS`; `PAID_COL = HEADERS.indexOf('Paid?') + 1`; `countOrderRows(sh)` (non-empty column A below row 1); `writeHeaders(sh)` (values, bold, dark background, gold text, frozen row); `ensureHeaders(sh)` (empty sheet: write; row 1 differs and no orders: clear row 1 across `max(HEADERS.length, getLastColumn())` and write; otherwise leave alone); `setupSheet` using those helpers with the existing refuse-if-data guard; `cutOf(d)` (`d.fit`, else the trailing parenthesised part of `d.item`, else `''`); `rowFor(d)` producing the 13 values in header order with `qty = d.quantity || 1`, `total = d.total ?? ''`, `orderTotal = d.orderTotal ?? total`, `Line = (lineIndex + 1) + ' of ' + (d.lineCount || 1)`, `Payment = d.payMethod || ''`, `code = d.paymentCode || d.zelleCode || ''`, `Paid? = false`; `doPost` calling `ensureHeaders`, `appendRow(rowFor(d))`, `insertCheckboxes` on `PAID_COL`, and the heads-up email listing line, order total, `Paying with:` and `Confirmation code:`. Keep the CLOSES_AT warning comment and `doGet` exactly as they are.
 
-- [ ] **Step 4: Run the harness, expect all PASS**
+- [x] **Step 4: Run the harness, expect all PASS**
 
 Run: `node gs-test.mjs`
 Expected: every line `PASS`, exit code 0.
 
-- [ ] **Step 5: Update `PREORDER-SETUP.md`**
+- [x] **Step 5: Update `PREORDER-SETUP.md`**
 
 Replace the "Sheet columns:" paragraph under Route A with:
 
@@ -93,7 +93,7 @@ In the curl sample under "Whichever route you pick, test it", replace the JSON l
 {"name":"TEST - delete me","email":"test@saintsrunclub.com","fit":"Men's","size":"M","quantity":1,"total":50,"orderTotal":50,"lineIndex":0,"lineCount":1,"payMethod":"Venmo","paymentCode":"TEST","item":"Race Day Singlet (Men's)","zelleCode":"TEST","source":"curl"}
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add google-apps-script.gs PREORDER-SETUP.md
@@ -113,19 +113,19 @@ git commit -m "Record the payment method and the whole order on every sheet row"
 - Consumes: `renderChips(host, values, assign)`, `clearChips(host)`, `setError(msg, field)`, `setText(el, text)`, `$()`, `state`, `CONFIG`, `codeEl`.
 - Produces: `CONFIG.payMethods = ['Zelle', 'Venmo']`, `state.pay`, `#pays` chip host, `#code-label`, `codeLabelFor(pay)`, `syncCodeLabel()`, payload fields `fit`, `payMethod`, `paymentCode`.
 
-- [ ] **Step 1: Set up the scratchpad and write the failing suite** — copy `serve.mjs`, `check-cart.mjs`, `check-venmo.mjs`, `check-sizes.mjs`, `check-mobile.mjs`, `check-live.mjs` from the prior scratchpad; start `node serve.mjs "<repo>" 8123` in the background. `<scratchpad>/check-payment.mjs` (full source in the scratchpad) asserts, against `http://127.0.0.1:8123/preorder.html` with the Apps Script route stubbed to `{"ok":true}`:
+- [x] **Step 1: Set up the scratchpad and write the failing suite** — copy `serve.mjs`, `check-cart.mjs`, `check-venmo.mjs`, `check-sizes.mjs`, `check-mobile.mjs`, `check-live.mjs` from the prior scratchpad; start `node serve.mjs "<repo>" 8123` in the background. `<scratchpad>/check-payment.mjs` (full source in the scratchpad) asserts, against `http://127.0.0.1:8123/preorder.html` with the Apps Script route stubbed to `{"ok":true}`:
   - render: `#pays` has two buttons reading `Zelle,Venmo`, none pressed; `#code-label` reads the neutral text; pressing Venmo then Zelle then Zelle again cycles the label Venmo → Zelle → neutral; no console errors.
   - gate: cut + size + name + email, no method, submit → `#note` reads `Pick how you're paying.` with `data-error="true"`, no POST, form visible, receipt hidden; picking a method clears the error; with code `V123` the single POST carries `payMethod 'Venmo'`, `fit "Men's"`, `paymentCode 'V123'` and the unchanged old fields (`zelleCode 'V123'`, `item "Race Day Singlet (Men's)"`, `size 'S'`, `total 50`, `orderTotal 50`, `lineIndex 0`, `lineCount 1`).
   - two lines: Men's S + Women's M ×2 with Zelle → two POSTs both `payMethod 'Zelle'`, each with its own `fit`/`size`, shared `orderTotal 150`; reset clears the chips and label; a fresh cut + size + name + email submit is gated again.
   - closed (`Date.now` pinned to 2026-09-10): both `#pays` buttons disabled.
   - 375px phone: the two chips share a row, are ≥44px tall, no horizontal overflow.
 
-- [ ] **Step 2: Run it, expect failures**
+- [x] **Step 2: Run it, expect failures**
 
 Run: `node check-payment.mjs`
 Expected: non-zero exit; Playwright throws on the first `#pays` selector.
 
-- [ ] **Step 3: CSS** — after `.sizes .size { … }` add:
+- [x] **Step 3: CSS** — after `.sizes .size { … }` add:
 
 ```css
   /* Paying with. Two fixed chips inside the fields column, same .size chip so
@@ -138,7 +138,7 @@ Expected: non-zero exit; Playwright throws on the first `#pays` selector.
   }
 ```
 
-- [ ] **Step 4: Markup** — replace the code-field `<label>` with:
+- [x] **Step 4: Markup** — replace the code-field `<label>` with:
 
 ```html
           <div class="field">
@@ -151,7 +151,7 @@ Expected: non-zero exit; Playwright throws on the first `#pays` selector.
           </label>
 ```
 
-- [ ] **Step 5: JS**
+- [x] **Step 5: JS**
 
 In `CONFIG`, after the `sizes:` line:
 
@@ -212,12 +212,12 @@ and after `clearChips(sizesEl);`:
     syncCodeLabel();
 ```
 
-- [ ] **Step 6: Run the new suite, expect all PASS**
+- [x] **Step 6: Run the new suite, expect all PASS**
 
 Run: `node check-payment.mjs`
 Expected: every line `PASS`, exit 0.
 
-- [ ] **Step 7: Patch the older suites for the new gate**
+- [x] **Step 7: Patch the older suites for the new gate**
 
 In `check-cart.mjs` and `check-venmo.mjs`, before every `await page.click('#submit');` that is meant to succeed, insert `await page.click('#pays button >> nth=0');`. Leave submits that test the cut/size gate alone (they fail before the payment check). Then run:
 
@@ -227,7 +227,7 @@ node check-cart.mjs && node check-venmo.mjs && node check-sizes.mjs && node chec
 
 Expected: all PASS.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add preorder.html
@@ -238,13 +238,13 @@ git commit -m "Ask which app the buyer paid with, and send it with every line"
 
 ### Task 3: Ship and verify
 
-- [ ] **Step 1: Push the site**
+- [x] **Step 1: Push the site**
 
 ```bash
 git push origin main
 ```
 
-- [ ] **Step 2: Live smoke**
+- [x] **Step 2: Live smoke**
 
 Run `check-live.mjs` against the deployed page; expect all PASS. Then confirm the live HTML contains `id="pays"`:
 
