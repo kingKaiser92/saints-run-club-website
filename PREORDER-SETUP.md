@@ -70,17 +70,42 @@ five minutes, all of it in a browser.
 > sheet, not the receipt, as the source of truth for what was actually
 > recorded.
 
-Sheet columns: `Timestamp, Name, Email, Size, Quantity, Total ($), Zelle Code,
-Paid?, Item, Source`. **Paid?** is a checkbox you tick by hand once you match
-the Zelle transfer.
+Sheet columns: `Timestamp, Name, Email, Cut, Size, Qty, Line Total ($), Order
+Total ($), Line, Payment, Confirmation Code, Paid?, Source`. One row per
+singlet line; a two-singlet order is two rows sharing a timestamp, name, email,
+order total and confirmation code, with `Line` reading `1 of 2` and `2 of 2`.
+**Payment** is Zelle or Venmo, picked by the buyer. **Paid?** is a checkbox you
+tick by hand once you match the transfer.
+
+The script repairs the header row itself: an empty sheet, or one whose row 1 is
+an older layout with no orders beneath it, gets the current headers on the next
+post. A sheet that already holds orders is never rewritten.
 
 The script uses `LockService` (20s) so two people submitting at once cannot
 interleave rows, rejects anything with the honeypot filled, and refuses posts
 arriving after `CLOSES_AT`. Keep `CLOSES_AT` in the script matching
 `CONFIG.closesAt` in the page.
 
-> If you edit the script later, use **Deploy → Manage deployments → edit → New
-> version**, or the URL changes and the page silently stops recording.
+> **If you edit the script later, you must republish it.** Saving in the Apps
+> Script editor does not touch the live URL; it keeps running whatever version
+> was last deployed. Use **Deploy → Manage deployments → pencil icon → Version:
+> New version → Deploy**. Do not create a *new* deployment: that mints a new
+> URL and the page silently stops recording.
+>
+> This bit us on Sept 3, 2026: `CLOSES_AT` was moved to Sept 9 in the repo but
+> the deployment was never republished, so from Sept 4 at 9 AM the live script
+> answered every order with `{"ok":false,"error":"closed"}`, buyers still saw
+> the success receipt (see the `no-cors` caveat above), and nothing reached the
+> sheet. Check what is actually live with a plain GET; `closesAt` and `open`
+> come from the deployed code, not the repo:
+>
+> ```sh
+> curl -sL "https://script.google.com/macros/s/AKfycbyfof-RDRSonbzwq4CGMl1XSZjB6xeBL0W6G5L2pddzneIt6CUnAUga5CsWr_NhtTG1/exec"
+> # {"ok":true,"service":"saints-preorder","closesAt":"2026-09-09T21:00:00-04:00","open":true,...}
+> ```
+>
+> If the response has no `closesAt` field at all, the deployment predates this
+> health check and is stale.
 
 > Gmail sends about 100 emails/day on a free account, far more than this drop
 > will produce. The sheet is the record; the email is a heads-up. The send is
@@ -190,7 +215,25 @@ whenever you want by asking Claude Code to read the table and write the rows.
 
 ## Whichever route you pick, test it
 
-Submit one real order and confirm:
+For Route A, first ask the deployed script directly. The page cannot show you
+its answer (`no-cors`), but curl can, and `ok: true` only comes back after the
+row has actually been appended:
+
+```sh
+EP="https://script.google.com/macros/s/AKfycbyfof-RDRSonbzwq4CGMl1XSZjB6xeBL0W6G5L2pddzneIt6CUnAUga5CsWr_NhtTG1/exec"
+curl -sL "$EP"     # health: closesAt and open must match the page
+curl -sL -H "Content-Type: text/plain;charset=utf-8" --data @- "$EP" <<'JSON'
+{"name":"TEST - delete me","email":"test@saintsrunclub.com","fit":"Men's","size":"M","quantity":1,"total":50,"orderTotal":50,"lineIndex":0,"lineCount":1,"payMethod":"Venmo","paymentCode":"TEST","item":"Race Day Singlet (Men's)","zelleCode":"TEST","source":"curl"}
+JSON
+# {"ok":true}                        -> a row landed; delete it from the sheet
+# {"ok":false,"error":"closed"}      -> the deployed CLOSES_AT has passed: republish
+# {"ok":false,"error":"..."}         -> the script threw; the message says where
+```
+
+Do not add `-X POST`: curl already POSTs when given `--data`, and forcing the
+method makes it re-POST through Google's redirect and fail with a 411.
+
+Then submit one real order through the page and confirm:
 
 1. A row appears with the right size, quantity, and total.
 2. The notification email arrives (Route A).
@@ -214,10 +257,9 @@ the same timestamp, name, email and Zelle code. Every payload also carries
 one heads-up email per order instead of one per row. A script deployed before
 this change still records every row correctly, it just emails once per row.
 
-To match a Zelle payment, add up the `Total ($)` of the rows with that name
-and timestamp; that sum is the amount the buyer was told to send. To tally
-sizes for the manufacturer, pivot on `Item` and `Size` summing
-`Quantity`. If a buyer's network dropped mid-submit and they retried, the
+To match a payment, find the name and read **Order Total ($)**; every row of
+that order carries it, and **Payment** says which app to look in. To tally
+sizes for the manufacturer, pivot on `Cut` and `Size` summing `Qty`. If a buyer's network dropped mid-submit and they retried, the
 duplicate rows share a name and email but not a timestamp.
 
 ## Payments
@@ -230,9 +272,8 @@ Manual, no processor. Two ways in, both set in `CONFIG`:
   `https://venmo.com/u/ericsvntiago`, which opens the Venmo app on a phone.
 
 Buyers are told to put their full name in the note, then the line summary the
-page builds for them ("Men's S, Women's M ×2"). Match incoming payments to
-orders by name and amount in whichever app they used; the sheet does not
-record which one.
+page builds for them ("Men's S, Women's M ×2"). The form asks which one they used, so the sheet's **Payment** column says where
+to look; match by name and **Order Total ($)** there.
 
 ## Editing content
 
@@ -240,7 +281,9 @@ Prices, sizes, dates, and handles are all in the `CONFIG` object near the top of
 the `<script>` block in `preorder.html`. The countdown reads `CONFIG.closesAt`.
 If you change that, change `CLOSES_AT` in `google-apps-script.gs` (Route A) or
 the trigger function (Route B) to match, or the two will disagree about when the
-drop closed.
+drop closed. For Route A that change is only live once you **republish a new
+version** of the deployment (see the note under Route A); editing the repo file
+or the script editor alone does nothing.
 
 ## Files
 
