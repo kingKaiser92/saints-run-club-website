@@ -459,6 +459,14 @@
     margin-bottom: 34px;
   }
   .sizes .size { flex: 1 1 calc(25% - 6px); min-width: 0; }
+  /* Paying with. Two fixed chips inside the fields column, same .size chip so
+     the pressed state and tap target match the cut picker. No bottom margin:
+     .fields already gaps its children. */
+  .pays {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
   .size {
     font-family: 'Archivo Black', Archivo, sans-serif;
     font-size: 14px;
@@ -941,8 +949,12 @@
             <span class="micro">Email</span>
             <input id="f-email" name="email" type="email" autocomplete="email" placeholder="you@email.com" required>
           </label>
+          <div class="field">
+            <span class="micro" id="pays-label">Paying with</span>
+            <div class="pays" id="pays" role="group" aria-labelledby="pays-label"></div>
+          </div>
           <label class="field">
-            <span class="micro">Zelle confirmation code (optional)</span>
+            <span class="micro" id="code-label">Payment confirmation code (optional)</span>
             <input id="f-code" name="code" type="text" class="mono" placeholder="Speeds up matching" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false">
           </label>
           <div class="hp" aria-hidden="true">
@@ -996,6 +1008,7 @@
     // These labels are what land in the sheet's Size column, so keep them
     // stable for the life of a drop. XXL is the double XL, XXXL the triple.
     sizes:       ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    payMethods:  ['Zelle', 'Venmo'],
     maxQty:      6,   // per order, across every line
     zelleUrl:    'https://www.zellepay.com/',
     zelleHandle: 'saintsvisionllc@gmail.com',
@@ -1012,7 +1025,7 @@
   var $ = function (id) { return document.getElementById(id); };
   // fit/size/qty is the picker: the singlet being chosen right now. lines is
   // everything already added with "Add and pick another".
-  var state = { fit: '', size: '', qty: 1, lines: [], sending: false };
+  var state = { fit: '', size: '', qty: 1, pay: '', lines: [], sending: false };
 
   function money(n) { return '$' + (Number.isInteger(n) ? n : n.toFixed(2)); }
 
@@ -1084,6 +1097,20 @@
 
   renderChips(cutsEl, CONFIG.fits, function (v) { state.fit = v; });
   renderChips(sizesEl, CONFIG.sizes, function (v) { state.size = v; });
+
+  // ---- paying with ----
+  // Required, no default: the page cannot tell which app a buyer opened (on
+  // desktop the Zelle path is a QR code with no click at all), and the sheet
+  // needs it to say where to look for the transfer. The code field's label
+  // follows the pick so nobody types a Venmo ID into a box that says Zelle.
+  var paysEl = $('pays'), codeLabelEl = $('code-label');
+  function codeLabelFor(pay) {
+    if (pay === 'Zelle') return 'Zelle confirmation code (optional)';
+    if (pay === 'Venmo') return 'Venmo transaction ID (optional)';
+    return 'Payment confirmation code (optional)';
+  }
+  function syncCodeLabel() { setText(codeLabelEl, codeLabelFor(state.pay)); }
+  renderChips(paysEl, CONFIG.payMethods, function (v) { state.pay = v; syncCodeLabel(); });
 
   // ---- quantity and the order lines ----
   // "Add and pick another" moves the picker into state.lines and clears it.
@@ -1292,6 +1319,7 @@
     }
     if (!nameEl.value.trim()) return setError('We need your name to match the payment.', nameEl);
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailEl.value)) return setError('That email looks off.', emailEl);
+    if (!state.pay) return setError("Pick how you're paying.");
 
     clearError();
     state.sending = true;
@@ -1316,6 +1344,11 @@
         quantity: l.qty,
         total: CONFIG.price * l.qty,
         zelleCode: codeEl.value.trim(),
+        // Sent alongside the older item/zelleCode so a script that has not
+        // been republished still records a row instead of dropping the order.
+        fit: l.fit,
+        payMethod: state.pay,
+        paymentCode: codeEl.value.trim(),
         company: hpEl.value,
         item: CONFIG.item + ' (' + l.fit + ')',
         source: 'saintsrunclub.com/preorder',
@@ -1377,9 +1410,12 @@
     state.fit = '';
     state.size = '';
     state.qty = 1;
+    state.pay = '';
     state.lines = [];
     clearChips(cutsEl);
     clearChips(sizesEl);
+    clearChips(paysEl);
+    syncCodeLabel();
     nameEl.value = emailEl.value = codeEl.value = hpEl.value = '';
     renderOrder();
     clearError();
