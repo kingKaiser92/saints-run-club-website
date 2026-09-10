@@ -12,7 +12,7 @@ var NOTIFY_EMAIL = 'svintsrunclub@gmail.com';  // '' to disable the heads-up ema
 // whatever CLOSES_AT it was published with, and because the page posts with
 // no-cors it cannot see the "closed" rejection: buyers get a success receipt
 // and no row is written. GET the /exec URL to see which value is live.
-var CLOSES_AT    = '2026-09-09T21:00:00-04:00'; // must match CONFIG.closesAt
+var CLOSES_AT    = '2026-09-14T00:00:00-04:00'; // must match CONFIG.closesAt
 
 // One row per singlet line. A two-singlet order is two rows that share a
 // timestamp, name, email, order total and confirmation code; "Line" says

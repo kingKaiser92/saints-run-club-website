@@ -101,7 +101,7 @@ arriving after `CLOSES_AT`. Keep `CLOSES_AT` in the script matching
 >
 > ```sh
 > curl -sL "https://script.google.com/macros/s/AKfycbyfof-RDRSonbzwq4CGMl1XSZjB6xeBL0W6G5L2pddzneIt6CUnAUga5CsWr_NhtTG1/exec"
-> # {"ok":true,"service":"saints-preorder","closesAt":"2026-09-09T21:00:00-04:00","open":true,...}
+> # {"ok":true,"service":"saints-preorder","closesAt":"2026-09-14T00:00:00-04:00","open":true,...}
 > ```
 >
 > If the response has no `closesAt` field at all, the deployment predates this
@@ -161,7 +161,7 @@ create policy "anon can insert orders"
 ```sql
 create function public.reject_late_orders() returns trigger as $$
 begin
-  if now() >= timestamptz '2026-09-09T21:00:00-04:00' then
+  if now() >= timestamptz '2026-09-14T00:00:00-04:00' then
     raise exception 'preorder closed';
   end if;
   return new;
