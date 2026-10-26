@@ -53,7 +53,7 @@
 <main class="wrap">
   <p class="kicker">Saints Run Club</p>
   <h1>Privacy Policy</h1>
-  <p class="meta">Last updated: July 5, 2026</p>
+  <p class="meta">Last updated: October 25, 2026</p>
   <p class="meta">Applies to: the Saints Run Club mobile app (iOS &amp; Android)</p>
 
   <p>Saints Run Club (“we,” “us,” “the club”) runs a community running club in Queens, New York,
@@ -61,10 +61,13 @@
   share it with, and the choices you have. We built the app to collect as little as possible.</p>
 
   <div class="callout">
-    <p><strong>The short version.</strong> We don’t use any advertising, analytics, or tracking
-    tools. We don’t sell your data. We don’t track you across other apps or websites. The app works
-    anonymously by default; an email is optional. Your GPS is used only in the moment you tap
-    “Check in,” and we store only a timestamp — never your coordinates.</p>
+    <p><strong>The short version.</strong> We do not sell your data or use advertising or
+    cross-app tracking. Membership requires a verified email and display name. Event check-in
+    checks proximity on your device and stores a timestamp. Separately, an authorized admin
+    may deliberately start live-run broadcasting, which sends the latest precise location to
+    our backend, including in the background. It never starts automatically and has an explicit
+    Stop control. New checkout and route/live tools are currently admin-only; the merchandise
+    catalogue and partner offers remain available to members.</p>
   </div>
 
   <div class="toc">
@@ -88,12 +91,13 @@
   <h2 id="collect">1. Information we collect</h2>
 
   <h3>Account &amp; sign-in</h3>
-  <p>When you first open the app, it creates an <strong>anonymous account</strong> with a random
-  identifier so you can use it right away — no name, email, or login required. If you choose to
-  secure your account, you can add an <strong>email address</strong> during setup; we send a
-  one-time verification code to confirm it. Your email is used to identify and recover your account
-  and is visible only to you. (Note: an email you enter is treated as unverified until you enter the
-  code we send.)</p>
+  <p>The app initially creates an anonymous account with a random identifier. To join the member
+  experience, you provide a display name and verify an email address with a one-time code.
+  Returning members normally sign in with an emailed code. Accounts provisioned with a password
+  may instead enter that password, which our authentication provider validates. Private admin
+  review passwords are not bundled in the app. We use account identifiers and email addresses
+  to operate and recover membership. Authorized club administration may access the information
+  needed to operate the club.</p>
 
   <h3>Profile information</h3>
   <p>You may optionally add profile details:</p>
@@ -105,11 +109,29 @@
   </ul>
 
   <h3>Location</h3>
-  <p>Location is used for a single purpose: <strong>event check-in</strong>. When you tap “Check in”
-  at a club run, the app reads your device’s GPS <em>once</em>, calculates on your device whether
-  you’re within range of the event, and — if you are — records only a <strong>check-in
-  timestamp</strong>. We do <strong>not</strong> store your GPS coordinates, and we do not track
-  your location in the background or at any other time.</p>
+  <p><strong>Member event check-in:</strong> when you tap Check in, the app reads GPS to confirm
+  proximity on your device and records an attendance timestamp. This check-in does not send or
+  store your GPS coordinates.</p>
+  <p><strong>Admin live-run broadcasting:</strong> a verified admin assigned to an enabled event
+  may explicitly start a live session after granting location permission. The app can send precise
+  latitude, longitude, accuracy and fix time to Supabase while foregrounded or backgrounded.
+  Only the latest position is retained; a route trail is not recorded. The position is linked to
+  the broadcaster and session and is used to display an authorized live run. Server-confirmed Stop removes the stored position; expired or revoked positions
+  are removed by session cleanup and no longer shown as live. Broadcasting never starts automatically. The current
+  member release restricts new route/live tools to admins. Maps use Apple or Google services
+  under their privacy terms; beta 3D map viewers are not enabled in the member release.</p>
+
+  <h3>Shop orders and payments</h3>
+  <p>The merchandise catalogue and partner offers remain available to members. New checkout and
+  order tools are currently admin-only and use Stripe test mode; live charges are disabled.
+  Order records include account identity, products, sizes, quantities, amounts, payment status,
+  pickup and refund history. Authorized admins use these records to manage orders.</p>
+  <p>Payment details are entered through Stripe or Apple Pay. We do not store full card numbers;
+  Stripe processes the supplied payment information and returns payment status. Stripe's mobile
+  SDK also collects product-interaction data for analytics and app functionality, including
+  payment reliability and fraud prevention. Its privacy manifests identify payment information
+  and product interaction as linked data, without advertising tracking. These practices apply
+  when the relevant payment tools are used, including the current admin sandbox.</p>
 
   <h3>Activity &amp; attendance</h3>
   <p>The app records which events you RSVP to, your check-ins (and how you checked in — on-site,
@@ -141,6 +163,8 @@
     <li>Show your running stats and connect runs to events (Strava, if connected).</li>
     <li>Send club announcements and event reminders (if you opt in).</li>
     <li>Provide training-plan tracking to enrolled members.</li>
+    <li>Operate explicitly started admin live runs and display their latest authorized position.</li>
+    <li>Manage orders, pickup, refunds and payment reconciliation where enabled.</li>
   </ul>
   <p>We do not use your data for advertising or to build a marketing profile.</p>
 
@@ -151,6 +175,8 @@
     Instagram, avatar) and your RSVP/attendance for club events are visible to signed-in members —
     that’s how a roster works. Your private fields (email, home area, birthday) are never shown to
     other members.</li>
+    <li><strong>With authorized club admins:</strong> account and order information needed for
+    club administration, and admin live-run positions while a session is authorized.</li>
     <li><strong>With service providers</strong> that run the app’s infrastructure (see below).</li>
     <li><strong>When you choose to</strong>, e.g., sharing a run card through your device’s share sheet.</li>
     <li><strong>For legal reasons</strong>, if required by law or to protect the club and its members.</li>
@@ -160,22 +186,30 @@
   <p>The app relies on a small set of providers, each governed by its own privacy policy:</p>
   <table>
     <tr><th>Provider</th><th>Role</th><th>Data involved</th></tr>
-    <tr><td><a href="https://supabase.com/privacy">Supabase</a></td><td>Backend, database, authentication, email verification codes</td><td>Account, profile, attendance, Strava cache, push tokens</td></tr>
+    <tr><td><a href="https://supabase.com/privacy">Supabase</a></td><td>Backend, database, authentication, email verification codes</td><td>Account, profile, attendance, Strava cache, push tokens, orders and latest admin live position</td></tr>
     <tr><td><a href="https://www.strava.com/legal/privacy">Strava</a></td><td>Activity sync (only if you connect it)</td><td>Your Strava profile &amp; activities, read-only</td></tr>
     <tr><td><a href="https://expo.dev/privacy">Expo</a></td><td>Push-notification delivery &amp; app updates</td><td>Push token; standard app-update metadata</td></tr>
+    <tr><td><a href="https://stripe.com/privacy">Stripe</a></td><td>Payment processing (currently admin sandbox)</td><td>Payment information, order/payment status and SDK product-interaction data</td></tr>
+    <tr><td><a href="https://www.apple.com/legal/privacy/">Apple</a> / <a href="https://policies.google.com/privacy">Google</a></td><td>Maps and optional wallet services</td><td>Map requests and information supplied to an enabled wallet</td></tr>
   </table>
-  <p>We do not integrate any advertising networks, analytics SDKs, or crash/behavior-tracking tools.</p>
+  <p>We do not integrate advertising networks. Stripe's payment SDK collects the operational
+  product-interaction analytics described above; we do not use that data for advertising.</p>
 
   <h2 id="tracking">5. Tracking &amp; advertising</h2>
-  <p>The app does <strong>not</strong> track you. We do not use third-party analytics, advertising
-  identifiers (such as the device advertising ID), cross-app tracking, or device fingerprinting, and
-  we do not link your activity to data from other companies for advertising. Consistent with this,
-  our App Store privacy label declares that data is <em>not</em> used to track you.</p>
+  <p>We do not use advertising identifiers, data brokers, or cross-app or cross-website tracking
+  for targeted advertising. Stripe's payment-related analytics are described above and are not
+  used by the club for advertising. Our App Store privacy disclosures identify data collected
+  for app functionality and applicable third-party analytics, without advertising tracking.</p>
 
   <h2 id="retention">6. Data retention</h2>
   <p>We keep your information for as long as your account exists so the app can function. Synced
   Strava data is removed when you disconnect Strava. Push tokens are removed when you sign out or
   disable notifications. When you delete your account (below), we remove your associated data.</p>
+
+  <p>Live positions are removed on Stop, expiry or revocation. Ended live-session metadata is
+  eligible for cleanup after seven days. Order and payment records are kept as needed for fulfillment,
+  reconciliation and recordkeeping. Account deletion removes or anonymizes the associated
+  identity where an order record must remain.</p>
 
   <h2 id="delete">7. Deleting your account &amp; your data</h2>
   <p>You can request permanent deletion of your account and associated data at any time:</p>
