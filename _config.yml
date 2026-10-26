@@ -1,0 +1,3 @@
+# Internal planning notes are not website pages.
+exclude:
+  - docs
