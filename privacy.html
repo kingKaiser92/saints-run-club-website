@@ -53,10 +53,10 @@
 <main class="wrap">
   <p class="kicker">Saints Run Club</p>
   <h1>Privacy Policy</h1>
-  <p class="meta">Last updated: October 25, 2026</p>
+  <p class="meta">Last updated: November 20, 2026</p>
   <p class="meta">Applies to: the Saints Run Club mobile app (iOS &amp; Android)</p>
 
-  <p>Saints Run Club (“we,” “us,” “the club”) runs a community running club in Queens, New York,
+  <p>Saints Run Club LLC (“we,” “us,” “the club”) runs a community running club in Queens, New York,
   and a companion mobile app for members. This policy explains what the app collects, why, who we
   share it with, and the choices you have. We built the app to collect as little as possible.</p>
 
@@ -74,6 +74,8 @@
     <p>On this page</p>
     <ul>
       <li><a href="#collect">What we collect</a></li>
+      <li><a href="#garmin">Garmin &amp; personal training</a></li>
+      <li><a href="#ai-transparency">AI transparency &amp; consent</a></li>
       <li><a href="#use">How we use it</a></li>
       <li><a href="#share">How it’s shared</a></li>
       <li><a href="#thirdparty">Third-party services</a></li>
@@ -146,6 +148,69 @@
   device. We only read from Strava; we never post to it. You can disconnect Strava at any time from
   your profile.</p>
 
+  <h3 id="garmin">Garmin &amp; personal training (optional; in development)</h3>
+  <p><strong>Availability.</strong> Garmin member account linking and AI coaching are in
+  development and are not enabled for general membership. The following describes their
+  intended operation when offered to an eligible participant. Publishing this policy or
+  registering our Garmin app does not connect your account, import your data, or give consent
+  to AI processing.</p>
+  <p><strong>What you choose to share.</strong> Connecting Garmin will be optional and use
+  Garmin’s authorization screen. We request the Activity and Health APIs for your own training:
+  run identifiers, dates, distance, duration, pace or speed, heart rate, elevation and available
+  activity summaries; and available daily sleep and heart-rate-variability summaries.
+  Availability depends on your device and the permissions you grant. These records are linked
+  to your Saints account. Our initial integration does not request sending workouts or courses
+  to your watch, and does not promise historical backfill.</p>
+  <p><strong>Your training inputs.</strong> You may supply a race date and distance, goal time,
+  weekly availability, recent race results, training preferences, private notes and coach
+  messages. We use these together with the Garmin information you authorize to show your own
+  training history, compare planned and completed sessions, summarize progress and propose
+  training adjustments. You decide whether to accept a proposed plan change. These are fitness
+  tools, not medical diagnosis or treatment.</p>
+  <p><strong>Privacy and access.</strong> Your Garmin records and personal coaching are private
+  to your account, rather than part of the club roster or another member’s feed. Authorized
+  operators and the service providers listed below may process them as needed to operate,
+  secure and support the feature. Garmin credentials are handled by our backend, never included
+  in the mobile app or sent to an AI provider. We do not sell Garmin information, use it for
+  advertising, or send Strava data into this coaching feature.</p>
+
+  <h3 id="ai-transparency">AI transparency statement &amp; separate consent</h3>
+  <p><strong>AI is a separate choice.</strong> Garmin authorization alone does not authorize
+  sending your information to an AI service. Before enabling AI coaching for a participant,
+  we will ask for an explicit, separate opt-in that identifies the data, provider and purpose.
+  Declining AI processing does not authorize any AI request, and does not prevent ordinary
+  club membership.</p>
+  <p><strong>Provider and purpose.</strong> Our planned AI processor is OpenAI, accessed through
+  its API by our Supabase backend. With your consent, selected run measurements, available sleep
+  and HRV summaries, race goals, availability, benchmarks, relevant private notes and coach
+  messages may be sent for inference: generating a run review, a progress summary, an answer
+  or a proposed training plan. We do not intentionally include Garmin tokens, your email address,
+  or GPS route coordinates in that coaching context. Avoid placing unnecessary identifying or
+  sensitive details in free-text notes. AI output can be wrong; you remain in control of plan
+  acceptance.</p>
+  <p><strong>No model training or evaluation.</strong> We will not use, or authorize a provider
+  to use, Garmin information or anything derived from it to train, evaluate or improve AI models.
+  AI processing will remain disabled unless the applicable provider settings and terms support
+  that restriction. Our coaching API requests disable stored Responses, but this is not a claim
+  of zero provider retention; service security and abuse-monitoring retention may still apply.</p>
+  <p><strong>Optional voice.</strong> If you choose voice coaching when available, recording
+  requires microphone permission and a separate action to send the recording for transcription
+  by OpenAI. The resulting text is used as a coach message. Audio is not intended to be retained
+  in our training database. Reading a reply aloud uses the device’s speech service where supported.</p>
+  <p><strong>Withdraw or change your choice.</strong> Contact
+  <a href="mailto:svintsrunclub@gmail.com?subject=Withdraw%20training%20AI%20consent">svintsrunclub@gmail.com</a>
+  from your account email to withdraw AI consent, without giving a reason. We will disable
+  future AI processing for your account; withdrawal does not undo processing already completed.
+  You may separately ask us to delete saved coaching and associated training data. In-app
+  consent and withdrawal controls are required before general member launch; until then,
+  this email route is available to pilot participants.</p>
+  <p><strong>Disconnect Garmin or exercise your data rights.</strong> You can revoke sharing
+  in Garmin Connect account settings. You can also email us to request disconnection, access,
+  correction, an export, or deletion of your Garmin and personal-training records. We verify
+  the account before acting, stop future imports when consent is withdrawn, and handle removal
+  of retained data separately from stopping future collection. Disconnecting Garmin does not
+  delete data held by Garmin itself. See the retention and deletion sections below.</p>
+
   <h3>Photos</h3>
   <p>The “run card” feature lets you build a shareable image. If you add a photo, it’s chosen through
   your device’s photo picker and stays on your device — the finished card is only shared or saved
@@ -163,6 +228,8 @@
     <li>Show your running stats and connect runs to events (Strava, if connected).</li>
     <li>Send club announcements and event reminders (if you opt in).</li>
     <li>Provide training-plan tracking to enrolled members.</li>
+    <li>When the optional Garmin feature is enabled and authorized, display personal training
+    evidence; with separate AI consent, generate coaching and proposed plan adjustments.</li>
     <li>Operate explicitly started admin live runs and display their latest authorized position.</li>
     <li>Manage orders, pickup, refunds and payment reconciliation where enabled.</li>
   </ul>
@@ -186,7 +253,10 @@
   <p>The app relies on a small set of providers, each governed by its own privacy policy:</p>
   <table>
     <tr><th>Provider</th><th>Role</th><th>Data involved</th></tr>
-    <tr><td><a href="https://supabase.com/privacy">Supabase</a></td><td>Backend, database, authentication, email verification codes</td><td>Account, profile, attendance, Strava cache, push tokens, orders and latest admin live position</td></tr>
+    <tr><td><a href="https://supabase.com/privacy">Supabase</a></td><td>Backend, database, authentication, email verification codes</td><td>Account, profile, attendance, Strava cache, push tokens, orders and latest admin live position; authorized Garmin records, server-side connection credentials and personal-training records when that feature is enabled</td></tr>
+    <tr><td><a href="https://www.garmin.com/privacy/">Garmin</a></td><td>Optional activity and health data connection (in development)</td><td>Your authorization, Garmin account identifier, granted permissions and the activity/health information you authorize</td></tr>
+    <tr><td><a href="https://openai.com/policies/privacy-policy/">OpenAI</a></td><td>Optional coaching inference and voice transcription (in development; separate consent required)</td><td>Selected training and health context, notes and messages; voice recordings only when you explicitly send them for transcription. No Garmin credentials or model training/evaluation use</td></tr>
+    <tr><td><a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub Pages</a></td><td>Hosts our public website, policy and registration logo</td><td>Standard web-request metadata such as IP address and user agent; no Garmin training database or AI coaching context is hosted on these public pages</td></tr>
     <tr><td><a href="https://www.strava.com/legal/privacy">Strava</a></td><td>Activity sync (only if you connect it)</td><td>Your Strava profile &amp; activities, read-only</td></tr>
     <tr><td><a href="https://expo.dev/privacy">Expo</a></td><td>Push-notification delivery &amp; app updates</td><td>Push token; standard app-update metadata</td></tr>
     <tr><td><a href="https://stripe.com/privacy">Stripe</a></td><td>Payment processing (currently admin sandbox)</td><td>Payment information, order/payment status and SDK product-interaction data</td></tr>
@@ -210,6 +280,15 @@
   eligible for cleanup after seven days. Order and payment records are kept as needed for fulfillment,
   reconciliation and recordkeeping. Account deletion removes or anonymizes the associated
   identity where an order record must remain.</p>
+
+  <p><strong>Garmin and personal training.</strong> When this feature is enabled, retained Garmin
+  evidence, training inputs and saved coaching will be kept while needed to provide your chosen
+  training experience, until you request their deletion or delete your account. Connection
+  credentials will be removed when the connection is revoked. You may request deletion of the
+  underlying Garmin evidence and derived coaching together. A consent withdrawal stops future
+  processing; it is not itself a request to erase every saved record. Provider-managed security
+  logs and backups can have separate retention periods, and we do not promise their immediate
+  erasure. We will explain any applicable limits when responding to your request.</p>
 
   <h2 id="delete">7. Deleting your account &amp; your data</h2>
   <p>You can request permanent deletion of your account and associated data at any time:</p>
